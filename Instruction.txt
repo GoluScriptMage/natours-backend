@@ -1,0 +1,95 @@
+create a new md file for all this 
+
+```markdown
+# TRICKY CODE ANALYSIS PROMPT
+
+Generate a technical cheat sheet that:
+
+1. **Targets ONLY**:
+   - Cryptography implementations
+   - Complex async operations
+   - Database transactions
+   - Non-obvious optimizations
+   - Security-critical validations
+
+2. **For each finding**:
+```markdown
+### [filename.js]:[lineNumber]
+```javascript
+[EXACT_CODE_LINE]
+```
+**Key Insight**:
+- [1 sentence technical rationale]
+- [1 sentence gotcha/edge case]
+- [1 sentence improvement suggestion]
+
+**Type**: 
+🔐 Security | ⚡ Performance | 🧠 Clever | ⚠️ Fragile
+```
+
+3. **Special Rules**:
+- MAX 3 lines per code snippet
+- Skip all boilerplate/configuration
+- Assume senior dev audience
+- No introductory explanations
+- Prioritize by:
+  1. Security-critical code
+  2. Performance bottlenecks
+  3. Non-obvious implementations
+
+4. **Example Output**:
+```markdown
+### authController.js:42
+```javascript
+const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' })
+```
+**Key Insight**:
+- Uses HMAC-SHA256 by default (consider RS256 for microservices)
+- Hardcoded expiry should use env var
+- Missing audience/issuer claims
+
+**Type**: 🔐 Security | ⚠️ Fragile
+
+### userModel.js:15
+```javascript
+this.password = await bcrypt.hash(this.password, 12)
+```
+**Key Insight**:
+- 12 rounds balances security vs performance
+- Automatic salt generation included
+- Consider argon2 for future-proofing
+
+**Type**: 🔐 Security | ⚡ Performance
+```
+
+5. **File Processing Order**:
+1. Authentication files
+2. Database models
+3. Core utilities
+4. Route handlers
+
+6. **Required Tags**:
+- `CRYPTO`: Cryptographic operations
+- `DB_TX`: Database transactions
+- `ASYNC_GOTCHA`: Async pitfalls
+- `OPTIMIZE`: Performance-critical
+- `SECURE`: Security implementations
+
+7. **Tone**:
+- Concise technical bullets
+- No fluff or examples
+- Assume knowledge of:
+  - Node.js streams
+  - JWT fundamentals
+  - MongoDB operations
+  - Async/await patterns
+```
+
+This prompt will:
+1. Generate laser-focused technical annotations
+2. Highlight only non-obvious implementations
+3. Provide actionable insights
+4. Maintain consistent format
+5. Skip all boilerplate code
+
+Would you like me to adjust any specific analysis parameters?

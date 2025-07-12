@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Test Tour",
+    "maxGroupSize": 10,
+    "difficulty": "easy",
+    "price": 100,
+    "imageCover": "test.jpg",
+    "duration": 7
+  }
+]
