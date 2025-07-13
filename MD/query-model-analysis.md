@@ -37,7 +37,7 @@ this.query = this.query.skip(skip).limit(limit);
 
 ---
 
-## Model Schema 
+## Model Schema
 
 ---
 
