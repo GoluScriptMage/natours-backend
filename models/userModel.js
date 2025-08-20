@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'A user must have an email'],
     unique: true,
     lowercase: true,
-    validator: [validator.isEmail, 'Please'],
+    validate: [validator.isEmail, 'Please provide a valid email'],
   },
   role: {
     type: String,
@@ -35,8 +35,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     minLength: [8, 'Password must be at least 8 characters long'],
     required: [true, 'A user must confim have a password'],
-    validator: {
-      validate: function (val) {
+    validate: {
+      validator: function (val) {
         return val === this.password;
       },
       message: 'Passwords are not the same',

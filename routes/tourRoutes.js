@@ -17,7 +17,9 @@ const router = express.Router();
 
 //Route for top 5 cheap tours
 router.route('/top-5-tours').get(aliasTopTours, getAllTours);
-router.route('/monthly-plan/:year').get(getMonthlyPlan, getAllTours);
+router
+  .route('/monthly-plan/:year')
+  .get(protect, restrictTo('admin', 'lead-guide'), getMonthlyPlan);
 router.route('/tours-stats').get(getTourStats);
 
 router.route('/').get(protect, getAllTours).post(createTour);

@@ -70,6 +70,34 @@ const tourSchema = new mongoose.Schema(
       default: Date.now(),
       select: false, // Exclude from query results by default
     },
+    startLocation: {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+      day: Number,
+    },
+    locations: {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+      day: Number,
+    },
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'users',
+      },
+    ],
     startDates: [Date],
     duration: {
       type: Number,
@@ -113,6 +141,14 @@ tourSchema.pre('save', function (next) {
 // Query MiddleWares
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
+  next();
+});
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+  });
+
   next();
 });
 

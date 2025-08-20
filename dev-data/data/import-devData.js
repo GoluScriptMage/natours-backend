@@ -10,9 +10,7 @@ const db = process.env.DATABASE_CONNECTION.replace(
   process.env.DATABASE_PASSWORD,
 );
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'),
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 mongoose
   .connect(db, {})
@@ -42,6 +40,8 @@ const deleteData = async () => {
   }
   process.exit();
 };
+
+console.log(process.argv);
 
 if (process.argv[2] === '--import') {
   importData();

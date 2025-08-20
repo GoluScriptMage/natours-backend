@@ -10,6 +10,7 @@ const hpp = require('hpp');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -41,11 +42,11 @@ app.use(mongoSanitize());
 app.use(xss());
 
 // Data
-// app.use(
-//   hpp({
-//     whitelist: ['price'],
-//   }),
-// );
+app.use(
+  hpp({
+    whitelist: ['price'],
+  }),
+);
 
 // Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
@@ -62,6 +63,7 @@ app.use((req, res, next) => {
 //Mounting the Routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 // Universal error handling for all undefined routes
 app.all('*', (req, res, next) => {
