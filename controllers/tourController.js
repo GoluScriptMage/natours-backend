@@ -2,6 +2,7 @@ const Tours = require('../models/tourModel');
 const ApiFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const { deleteOne } = require('./handlerFactory');
 
 // middleware to alias top tours
 // This middleware modifies the request query to filter, sort, and limit the results for top tours
@@ -61,17 +62,19 @@ exports.updateTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tours.findByIdAndDelete(req.params.id);
-  if (!newTour) {
-    next(new AppError('No tour found with that ID', 404));
-  }
+// exports.deleteTour = catchAsync(async (req, res, next) => {
+//   const newTour = await Tours.findByIdAndDelete(req.params.id);
+//   if (!newTour) {
+//     next(new AppError('No tour found with that ID', 404));
+//   }
 
-  res.status(204).json({
-    status: 'success',
-    message: 'Tour deleted successfully',
-  });
-});
+//   res.status(204).json({
+//     status: 'success',
+//     message: 'Tour deleted successfully',
+//   });
+// });
+
+exports.deleteTour = deleteOne(Tours);
 
 exports.createTour = catchAsync(async (req, res, next) => {
   const newTour = await Tours.create(req.body);
