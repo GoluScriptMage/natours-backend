@@ -120,6 +120,12 @@ tourSchema.virtual('durationInWeeks').get(function () {
   return (this.duration / 7).toFixed(2);
 });
 
+tourSchema.virtual('reviews', {
+  ref: 'review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 tourSchema.index({ price: 1, ratingsAverage: 1 });
 
 //Document MiddleWares pre and post
@@ -170,6 +176,6 @@ tourSchema.pre('aggregate', function (next) {
   next();
 });
 
-const Tours = mongoose.model('Tours', tourSchema);
+const Tours = mongoose.model('tours', tourSchema);
 
 module.exports = Tours;

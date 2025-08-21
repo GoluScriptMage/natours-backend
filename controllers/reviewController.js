@@ -23,7 +23,7 @@ exports.getReview = catchAsync(async (req, res, next) => {
 
   const review = await Review.findById(reviewId);
   if (!review) {
-    return new AppError('No review found with the id');
+    return next(new AppError('No review found with the id', 404));
   }
 
   res.status(200).json({
@@ -51,5 +51,35 @@ exports.getAllReview = catchAsync(async (req, res, next) => {
 });
 
 // To update reviews
+exports.updateReview = catchAsync(async (req, res, next) => {
+  const reviewId = req.params.id;
+  const updatedReview = await Review.findById(reviewId);
+
+  const { review, ratings } = req.body;
+
+  if (!updatedReview) {
+    return next(new AppError('No review found with that ID', 404));
+  }
+
+  updatedReview.review = review || updatedReview.review;
+  updatedReview.ratings = ratings || updatedReview.ratings;
+  updatedReview.createdAt = Date.now();
+
+  await updatedReview.save();
+
+  res.status(200).json({
+    status: 'success',
+    review: updatedReview,
+  });
+});
 
 // To delete reviews
+exports.deleteReview = catchAsync(async (req, res, next) => {
+  const reviewId = req.params.id;
+
+  await Review.findByIdAndDelete(reviewId);
+
+  res.status(204).json({
+    status: 'success',
+  });
+});
