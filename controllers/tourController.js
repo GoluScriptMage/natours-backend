@@ -1,8 +1,12 @@
 const Tours = require('../models/tourModel');
-const ApiFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
-const { deleteOne } = require('./handlerFactory');
+const {
+  deleteOne,
+  createOne,
+  updateOne,
+  getOne,
+  getAll,
+} = require('./handlerFactory');
 
 // middleware to alias top tours
 // This middleware modifies the request query to filter, sort, and limit the results for top tours
@@ -13,80 +17,14 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  //  Executing the query
-  const apiFeatures = new ApiFeatures(Tours.find(), req.query)
-    .filter()
-    .pagination()
-    .sortBy()
-    .fields();
-  const newTour = await apiFeatures.query;
-
-  res.status(200).json({
-    status: 'success',
-    results: newTour.length,
-    data: {
-      tours: newTour,
-    },
-  });
-});
-
-exports.getTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tours.findById(req.params.id).populate('reviews');
-
-  if (!newTour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: { newTour },
-  });
-});
-
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!newTour) {
-    next(new AppError('No tour found with that ID', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      newTour,
-    },
-  });
-});
-
-// exports.deleteTour = catchAsync(async (req, res, next) => {
-//   const newTour = await Tours.findByIdAndDelete(req.params.id);
-//   if (!newTour) {
-//     next(new AppError('No tour found with that ID', 404));
-//   }
-
-//   res.status(204).json({
-//     status: 'success',
-//     message: 'Tour deleted successfully',
-//   });
-// });
-
+// Routes handled by handlerFactory
+exports.getAllTours = getAll(Tours);
+exports.getTour = getOne(Tours, { path: 'reviews' });
+exports.updateTour = updateOne(Tours);
 exports.deleteTour = deleteOne(Tours);
+exports.createTour = createOne(Tours);
 
-exports.createTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tours.create(req.body);
-  if (!newTour) {
-    next(new AppError('No tour found with that ID', 404));
-  }
-  res.status(201).json({
-    status: 'success',
-    message: newTour,
-  });
-});
-
+// TO get the tour stats
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tours.aggregate([
     {
@@ -127,6 +65,7 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
   });
 });
 
+// To get the monthly plan of the tours
 exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
   const data = await Tours.aggregate([

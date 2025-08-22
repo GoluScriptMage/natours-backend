@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { deleteOne } = require('./handlerFactory');
+const { deleteOne, updateOne, getOne } = require('./handlerFactory');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -64,25 +64,13 @@ exports.getAllUser = catchAsync(async (req, res) => {
   });
 });
 
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not defined yet!',
-  });
-};
+/// TO create a new User - admin only
+// exports.createUser = createOne(User);
 
-exports.createUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not defined yet!',
-  });
-};
+exports.getUser = getOne(User);
 
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not defined yet!',
-  });
-};
+// Update user name only
+exports.updateUser = updateOne(User);
 
+// Delete User - admin only
 exports.deleteUser = deleteOne(User);

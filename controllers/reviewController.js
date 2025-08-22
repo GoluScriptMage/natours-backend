@@ -1,26 +1,35 @@
 const Review = require('../models/reviewModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const { deleteOne } = require('./handlerFactory');
+const { deleteOne, createOne, updateOne } = require('./handlerFactory');
 
-// To create reviews
-exports.createReview = catchAsync(async (req, res, next) => {
-  // Getting the tourId and user id from params and req if available
+// To set the tour & user id for the create review
+exports.setTourUserIds = (req, res, next) => {
   if (req.params.tourId) req.body.tour = req.params.tourId;
   if (req.user) req.body.user = req.user._id;
+  next();
+};
 
-  const { review, ratings, createdAt, tour, user } = req.body;
+exports.createReview = createOne(Review);
 
-  const newReview = await Review.create({
-    review,
-    ratings,
-    createdAt,
-    tour,
-    user,
-  });
+// To create reviews
+// exports.createReview = catchAsync(async (req, res, next) => {
+//   // Getting the tourId and user id from params and req if available
+//   if (req.params.tourId) req.body.tour = req.params.tourId;
+//   if (req.user) req.body.user = req.user._id;
 
-  res.status(201).json({ status: 'success', data: { review: newReview } });
-});
+//   const { review, ratings, createdAt, tour, user } = req.body;
+
+//   const newReview = await Review.create({
+//     review,
+//     ratings,
+//     createdAt,
+//     tour,
+//     user,
+//   });
+
+//   res.status(201).json({ status: 'success', data: { review: newReview } });
+// });
 
 // To get reviews
 exports.getReview = catchAsync(async (req, res, next) => {
@@ -58,28 +67,31 @@ exports.getAllReview = catchAsync(async (req, res, next) => {
   });
 });
 
-// To update reviews
-exports.updateReview = catchAsync(async (req, res, next) => {
-  const reviewId = req.params.id;
-  const updatedReview = await Review.findById(reviewId);
+// // To update reviews
+// exports.updateReview = catchAsync(async (req, res, next) => {
+//   const reviewId = req.params.id;
+//   const updatedReview = await Review.findById(reviewId);
 
-  const { review, ratings } = req.body;
+//   const { review, ratings } = req.body;
 
-  if (!updatedReview) {
-    return next(new AppError('No review found with that ID', 404));
-  }
+//   if (!updatedReview) {
+//     return next(new AppError('No review found with that ID', 404));
+//   }
 
-  updatedReview.review = review || updatedReview.review;
-  updatedReview.ratings = ratings || updatedReview.ratings;
-  updatedReview.createdAt = Date.now();
+//   updatedReview.review = review || updatedReview.review;
+//   updatedReview.ratings = ratings || updatedReview.ratings;
+//   updatedReview.createdAt = Date.now();
 
-  await updatedReview.save();
+//   await updatedReview.save();
 
-  res.status(200).json({
-    status: 'success',
-    review: updatedReview,
-  });
-});
+//   res.status(200).json({
+//     status: 'success',
+//     review: updatedReview,
+//   });
+// });
+
+// To update review
+exports.updateReview = updateOne(Review);
 
 // To delete reviews
 exports.deleteReview = deleteOne(Review);

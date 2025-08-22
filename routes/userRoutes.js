@@ -2,7 +2,6 @@ const express = require('express');
 const {
   getAllUser,
   getUser,
-  createUser,
   updateUser,
   deleteUser,
   updateUserDetails,
@@ -30,7 +29,9 @@ router.patch('/updatePassword', protect, updatePassword);
 router.patch('/updateMe', protect, updateUserDetails);
 router.delete('/deleteMe', protect, deleteCurrentuser);
 
-router.route('/').get(getAllUser).post(createUser);
+router.route('/').get(getAllUser);
+// .post(createUser);
+
 router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
 module.exports = router;
