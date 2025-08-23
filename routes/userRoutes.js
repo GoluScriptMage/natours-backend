@@ -6,6 +6,7 @@ const {
   deleteUser,
   updateUserDetails,
   deleteCurrentuser,
+  getMe,
 } = require('../controllers/userController');
 
 const {
@@ -15,23 +16,33 @@ const {
   resetPassword,
   updatePassword,
   protect,
+  restrictTo,
 } = require('../controllers/authControllers');
 
 const router = express.Router();
 
 router.post('/signup', signup);
 router.post('/login', login);
-
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
 
-router.patch('/updatePassword', protect, updatePassword);
-router.patch('/updateMe', protect, updateUserDetails);
-router.delete('/deleteMe', protect, deleteCurrentuser);
+// Protect all routes after this middleware
+router.use(protect);
+
+router.patch('/updatePassword', updatePassword);
+router.patch('/updateMe', updateUserDetails);
+router.delete('/deleteMe', deleteCurrentuser);
 
 router.route('/').get(getAllUser);
+
+// To get current user profile without giving id in the url
+router.route('/me').get(getMe, getUser);
 // .post(createUser);
 
-router.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+router
+  .route('/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(restrictTo('admin'), deleteUser);
 
 module.exports = router;

@@ -121,12 +121,13 @@ tourSchema.virtual('durationInWeeks').get(function () {
 });
 
 tourSchema.virtual('reviews', {
-  ref: 'review',
+  ref: 'reviews',
   foreignField: 'tour',
   localField: '_id',
 });
 
 tourSchema.index({ price: 1, ratingsAverage: 1 });
+tourSchema.index({ slug: 1 });
 
 //Document MiddleWares pre and post
 

@@ -1,7 +1,11 @@
 const Review = require('../models/reviewModel');
-const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
-const { deleteOne, createOne, updateOne } = require('./handlerFactory');
+const {
+  deleteOne,
+  createOne,
+  updateOne,
+  getAll,
+  getOne,
+} = require('./handlerFactory');
 
 // To set the tour & user id for the create review
 exports.setTourUserIds = (req, res, next) => {
@@ -32,63 +36,10 @@ exports.createReview = createOne(Review);
 // });
 
 // To get reviews
-exports.getReview = catchAsync(async (req, res, next) => {
-  const reviewId = req.params.id;
-
-  const review = await Review.findById(reviewId);
-  if (!review) {
-    return next(new AppError('No review found with the id', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    review,
-  });
-});
+exports.getReview = getOne(Review);
 
 // To get all reviews
-exports.getAllReview = catchAsync(async (req, res, next) => {
-  let filter;
-  if (req.params.tourId) filter = { tour: req.params.tourId };
-
-  const reviews = await Review.find(filter);
-  if (!reviews) {
-    res.status(404).json({
-      status: 'fail',
-      message: 'No reviews found',
-    });
-  }
-  res.status(200).json({
-    status: 'success',
-    results: reviews.length,
-    data: {
-      reviews,
-    },
-  });
-});
-
-// // To update reviews
-// exports.updateReview = catchAsync(async (req, res, next) => {
-//   const reviewId = req.params.id;
-//   const updatedReview = await Review.findById(reviewId);
-
-//   const { review, ratings } = req.body;
-
-//   if (!updatedReview) {
-//     return next(new AppError('No review found with that ID', 404));
-//   }
-
-//   updatedReview.review = review || updatedReview.review;
-//   updatedReview.ratings = ratings || updatedReview.ratings;
-//   updatedReview.createdAt = Date.now();
-
-//   await updatedReview.save();
-
-//   res.status(200).json({
-//     status: 'success',
-//     review: updatedReview,
-//   });
-// });
+exports.getAllReview = getAll(Review);
 
 // To update review
 exports.updateReview = updateOne(Review);

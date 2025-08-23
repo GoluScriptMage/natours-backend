@@ -37,6 +37,8 @@ exports.updateOne = (model) =>
       runValidators: true,
     });
 
+    console.log(`doc: ${doc}`);
+
     if (!doc) {
       next(new AppError('No Document found with that ID', 404));
     }

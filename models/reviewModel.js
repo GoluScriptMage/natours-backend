@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tours = require('./tourModel');
 
 const reviewSchema = new mongoose.Schema({
   review: {
@@ -41,6 +42,54 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
-const Review = mongoose.model('review', reviewSchema);
+reviewSchema.statics.calcReviewStats = async function (tourId) {
+  const stats = await this.aggregate([
+    {
+      $match: {
+        tour: tourId,
+      },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        numReviews: { $sum: 1 },
+        avgRatings: { $avg: '$ratings' },
+      },
+    },
+  ]);
+
+  let updatedStats;
+
+  if (stats.length > 0) {
+    updatedStats = {
+      ratingsQuantity: stats[0].numReviews,
+      ratingsAverage: stats[0].avgRatings,
+    };
+  } else {
+    updatedStats = {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    };
+  }
+  await Tours.findByIdAndUpdate(tourId, updatedStats);
+};
+
+reviewSchema.post('save', function () {
+  this.constructor.calcReviewStats(this.tour);
+});
+
+// Add middleware for findByIdAndUpdate, findByIdAndDelete
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  this.r = await this.clone().findOne();
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  if (this.r) {
+    await this.r.constructor.calcReviewStats(this.r.tour);
+  }
+});
+
+const Review = mongoose.model('reviews', reviewSchema);
 
 module.exports = Review;
