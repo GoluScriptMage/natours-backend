@@ -1,31 +1,45 @@
 const mongoose = require('mongoose');
 const Tours = require('./tourModel');
 
-const reviewSchema = new mongoose.Schema({
-  review: {
-    type: String,
-    required: [true, 'Review cannot be empty'],
+const reviewSchema = new mongoose.Schema(
+  {
+    review: {
+      type: String,
+      required: [true, 'Review cannot be empty'],
+    },
+    ratings: {
+      type: Number,
+      min: [1, 'Rating must be above 1.0'],
+      max: [5, 'Rating must be below 5.0'],
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
+    tour: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'tours',
+      required: [true, 'Review must belong to a tour'],
+    },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'users',
+      required: [true, 'Review must belong to a user'],
+    },
   },
-  ratings: {
-    type: Number,
-    min: [1, 'Rating must be above 1.0'],
-    max: [5, 'Rating must be below 5.0'],
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
+);
+
+reviewSchema.index(
+  {
+    tour: 1,
+    user: 1,
   },
-  tour: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'tours',
-    required: [true, 'Review must belong to a tour'],
-  },
-  user: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'users',
-    required: [true, 'Review must belong to a user'],
-  },
-});
+  { unique: true },
+);
 
 reviewSchema.pre(/^find/, function (next) {
   // this.populate({
