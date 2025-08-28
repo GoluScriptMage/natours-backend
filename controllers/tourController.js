@@ -7,6 +7,7 @@ const {
   getOne,
   getAll,
 } = require('./handlerFactory');
+const AppError = require('../utils/appError');
 
 // middleware to alias top tours
 // This middleware modifies the request query to filter, sort, and limit the results for top tours
@@ -108,5 +109,41 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     status: 'success',
     results: data.length,
     data,
+  });
+});
+
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+
+  const [lat, lng] = latlng.split(',');
+
+  const latitude = parseFloat(lat);
+  const longitude = parseFloat(lng);
+
+  if (!latitude || !longitude) {
+    return next(
+      new AppError(
+        'Please provide latitude and longitude in the format lat,lng',
+        400,
+      ),
+    );
+  }
+
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+  const tours = await Tours.find({
+    startLocation: {
+      $geoWithin: {
+        $centerSphere: [[longitude, latitude], radius], // Corrected order and data type
+      },
+    },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      tours,
+    },
   });
 });
