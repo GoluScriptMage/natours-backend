@@ -147,3 +147,52 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+
+  const [lat, lng] = latlng.split(',');
+
+  // Convert string into numbers
+  const latitude = parseFloat(lat);
+  const longitude = parseFloat(lng);
+
+  if (!latitude || !longitude) {
+    return next(
+      new AppError(
+        'Please provide latitude and longitude in the format lat,lng',
+        400,
+      ),
+    );
+  }
+
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+  const distances = await Tours.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [longitude, latitude], // Needs to be in the same order
+        },
+        distanceField: 'distance', // Specify which field to store the calculated distance
+        distanceMultiplier: multiplier, // Convert radians to the desired unit
+        spherical: true, // Enable spherical calculations
+      },
+    },
+    {
+      // Select the only field we want to return
+      $project: {
+        distance: 1, // Keep the calculated distance
+        name: 1, // keep the tour name
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    results: distances.length,
+    data: {
+      distances,
+    },
+  });
+});

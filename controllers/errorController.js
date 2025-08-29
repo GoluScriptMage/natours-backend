@@ -43,7 +43,8 @@ const sendErrorProd = (err, res) => {
     // Programming error we don't want client to see and leak any info
   } else {
     // lOGGING THE ERROR IN CONSOLE
-    console.error('ERROR 💥', err);
+    console.log('Yo i am working here! , all clear ✅');
+    console.log('ERROR 💥', err);
 
     // Sending a generic message to the client
     res.status(err.statusCode || 500).json({
