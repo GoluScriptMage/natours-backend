@@ -58,7 +58,7 @@ MIT (or your preferred license)
 
 ---
 
-Feel free to adjust the license section and add any extra badges or links as needed!The natours-backend project is a Node.js/Express backend application that focuses on secure authentication, authorization, and tour management APIs. The main flow centers around:
+Feel free to adjust the of the license section and add any extra badges or links as needed!The natours-backend project is a Node.js/Express backend application that focuses on secure authentication, authorization, and tour management APIs. The main flow centers around:
 
 1. User Signup & Login:
    - Secure password hashing (bcrypt) and JWT token generation.
