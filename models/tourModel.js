@@ -82,17 +82,19 @@ const tourSchema = new mongoose.Schema(
       description: String,
       day: Number,
     },
-    locations: {
-      type: {
-        type: String,
-        default: 'Point',
-        enum: ['Point'],
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
       },
-      coordinates: [Number],
-      address: String,
-      description: String,
-      day: Number,
-    },
+    ],
     guides: [
       {
         type: mongoose.Schema.ObjectId,

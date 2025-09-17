@@ -92,8 +92,20 @@ reviewSchema.post('save', function () {
   this.constructor.calcReviewStats(this.tour);
 });
 
+// Add this to your reviewModel.js
+reviewSchema.statics.recalculateAllTourStats = async function () {
+  console.log('Recalculating statistics for all tours...');
+  const allTours = await this.distinct('tour'); // Get unique tour IDs from reviews
+
+  // Use Promise.all with Array.map to avoid generators and awaiting inside loops
+  await Promise.all(allTours.map((tourId) => this.calcReviewStats(tourId)));
+
+  console.log('All tour statistics have been updated.');
+};
+
 // Add middleware for findByIdAndUpdate, findByIdAndDelete
 reviewSchema.pre(/^findOneAnd/, async function (next) {
+  // Clone the query to avoid issues with executing it twice
   this.r = await this.clone().findOne();
   next();
 });

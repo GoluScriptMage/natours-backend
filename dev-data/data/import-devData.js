@@ -29,6 +29,10 @@ const importData = async () => {
     await Tours.create(tours);
     await Review.create(reviews);
     await User.create(users, { validateBeforeSave: false });
+
+    // ... your import logic ...
+    await Review.recalculateAllTourStats(); // <-- THE FIX
+    console.log('Data successfully loaded and stats recalculated!');
     console.log('Data Successfully loaded!');
   } catch (err) {
     console.log('Error message:', err.message);
