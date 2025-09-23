@@ -7,7 +7,7 @@ const reviewSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Review cannot be empty'],
     },
-    ratings: {
+    rating: {
       type: Number,
       min: [1, 'Rating must be above 1.0'],
       max: [5, 'Rating must be below 5.0'],
@@ -42,16 +42,9 @@ reviewSchema.index(
 );
 
 reviewSchema.pre(/^find/, function (next) {
-  // this.populate({
-  //   path: 'tour',
-  //   select: 'name',
-  // }).populate({
-  //   path: 'user',
-  //   select: 'name',
-  // });
   this.populate({
     path: 'user',
-    select: 'name',
+    select: 'name photo',
   });
   next();
 });
@@ -67,7 +60,7 @@ reviewSchema.statics.calcReviewStats = async function (tourId) {
       $group: {
         _id: '$tour',
         numReviews: { $sum: 1 },
-        avgRatings: { $avg: '$ratings' },
+        avgRatings: { $avg: '$rating' },
       },
     },
   ]);

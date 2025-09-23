@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -27,8 +28,38 @@ app.set('views', path.join(__dirname, 'views'));
 // Setting up the static file
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Setting up cookie Parser
+app.use(cookieParser());
+
 // Set Security HTTP headers
-app.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'", 'https://*.mapbox.com'],
+      scriptSrc: [
+        "'self'",
+        'https://api.mapbox.com',
+        'https://cdnjs.cloudflare.com',
+        'https://events.mapbox.com',
+        'blob:',
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        'https://api.mapbox.com',
+        'https://fonts.googleapis.com',
+      ],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https://api.mapbox.com'],
+      connectSrc: [
+        "'self'",
+        'https://api.mapbox.com',
+        'https://events.mapbox.com',
+        'https://cdnjs.cloudflare.com',
+      ],
+    },
+  }),
+);
 
 // Development Logging
 console.log(`Server is running in ${process.env.NODE_ENV} mode`);
@@ -70,10 +101,19 @@ app.use((req, res, next) => {
 });
 
 //Mounting the Routes
+
+// Special route handler for image requests within tour routes
+app.use('/tour/img', express.static(path.join(__dirname, 'public/img')));
+
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+
+// Ignore Chrome DevTools request
+app.use('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
+  res.status(204).end();
+});
 
 // Universal error handling for all undefined routes
 app.all('*', (req, res, next) => {

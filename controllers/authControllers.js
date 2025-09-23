@@ -86,6 +86,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
@@ -116,6 +118,37 @@ exports.protect = catchAsync(async (req, res, next) => {
   // grant access to the restricted route
   req.user = currentuser;
 
+  next();
+});
+
+// First checking the user using jwt and after confiming it send back the user in req
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    // 1) Getting the token from the user Header and check if it Exist
+    const decoded = await promisify(JWT.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET,
+    );
+
+    if (!decoded) {
+      return next();
+    }
+
+    // 2) Checking if the user still exists
+    const currentuser = await User.findById(decoded.id);
+    if (!currentuser) {
+      return next();
+    }
+
+    //  3) check if the user changed the password after the token was issued
+    if (currentuser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+
+    // grant access to the restricted route
+    res.locals.user = currentuser;
+    return next();
+  }
   next();
 });
 

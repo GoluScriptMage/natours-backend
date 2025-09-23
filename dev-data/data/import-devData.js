@@ -27,13 +27,12 @@ console.log(process.argv);
 const importData = async () => {
   try {
     await Tours.create(tours);
-    await Review.create(reviews);
     await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
 
-    // ... your import logic ...
-    await Review.recalculateAllTourStats(); // <-- THE FIX
+    // After importing all data, recalculate tour stats
+    await Review.recalculateAllTourStats();
     console.log('Data successfully loaded and stats recalculated!');
-    console.log('Data Successfully loaded!');
   } catch (err) {
     console.log('Error message:', err.message);
     if (err.errors) {
