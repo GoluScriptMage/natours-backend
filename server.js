@@ -26,6 +26,7 @@ const server = app.listen(port, () => {
   console.log('Server is running on port 3000');
 });
 
+// Handles undhandled Promise Rejection
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
   console.log('Unhandled Rejection 💥 Shutting Down...');

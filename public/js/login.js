@@ -1,7 +1,8 @@
 /* eslint-disable */
-// Remove the require statement - axios should be included via a script tag in your HTML
+// axios should be included via a script tag in your HTML
+import { showAlert } from './alerts';
 
-const login = async (email, password) => {
+export const login = async (email, password) => {
   try {
     const res = await axios({
       method: 'POST',
@@ -11,22 +12,14 @@ const login = async (email, password) => {
         password,
       },
     });
-    console.log('Response', res.data);
-    return res.data;
+
+    if (res.status === 200) {
+      showAlert('success', 'Logged in Successfully');
+      window.setTimeout(() => {
+        location.assign('/');
+      }, 500);
+    }
   } catch (err) {
-    console.error(err.response);
+    showAlert('error', err.response.data.message);
   }
 };
-
-// Only add event listener if form exists
-const loginForm = document.querySelector('.form');
-if (loginForm) {
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const res = await login(email, password);
-    console.log(res);
-  });
-}

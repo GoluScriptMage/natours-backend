@@ -2,20 +2,24 @@
   "name": "starter",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
     "start:prod": "cross-env NODE_ENV=production nodemon server.js",
-    "debug": "ndb server.js"
+    "debug": "ndb server.js",
+    "watch:js": "parcel watch --target client --no-cache",
+    "build:js": "parcel build --target client --no-cache"
   },
   "keywords": [],
-  "author": "",
+  "author": "Golu Dhakad",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "express-mongo-sanitize": "^2.2.0",
@@ -45,9 +49,17 @@
     "eslint-plugin-prettier": "^5.4.1",
     "eslint-plugin-react": "^7.37.5",
     "ndb": "^1.1.5",
+    "parcel": "^2.16.0",
     "prettier": "^3.5.3"
   },
   "engines": {
     "node": ">=14.0.0"
+  },
+  "targets": {
+    "client": {
+      "source": "./public/js/index.js",
+      "distDir": "./public/js/bundled",
+      "publicUrl": "/js/bundled"
+    }
   }
 }
