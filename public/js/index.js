@@ -1,6 +1,8 @@
 /* eslint-disable */
 import { displayMap } from './mapbox.js';
-import { login } from './login.js';
+import { login, logout } from './login.js';
+
+const logoutBtn = document.querySelector('.nav__el--logout');
 
 // Get locations from HTML
 const mapBox = document.getElementById('map');
@@ -20,3 +22,5 @@ if (loginForm) {
     login(email, password);
   });
 }
+
+if (logoutBtn) logoutBtn.addEventListener('click', logout);

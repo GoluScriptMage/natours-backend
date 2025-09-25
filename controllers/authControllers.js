@@ -38,6 +38,15 @@ const createSignToken = (res, statusCode, user, token) => {
   });
 };
 
+exports.logoutToken = (req, res) => {
+  res.cookie('jwt', 'loggedOut', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({ status: 'success' });
+};
+
 // To create new User
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
@@ -122,35 +131,39 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 // First checking the user using jwt and after confiming it send back the user in req
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
+exports.isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
-    // 1) Getting the token from the user Header and check if it Exist
-    const decoded = await promisify(JWT.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET,
-    );
+    try {
+      // 1) Getting the token from the user Header and check if it Exist
+      const decoded = await promisify(JWT.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET,
+      );
 
-    if (!decoded) {
+      if (!decoded) {
+        return next();
+      }
+
+      // 2) Checking if the user still exists
+      const currentuser = await User.findById(decoded.id);
+      if (!currentuser) {
+        return next();
+      }
+
+      //  3) check if the user changed the password after the token was issued
+      if (currentuser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      // grant access to the restricted route
+      res.locals.user = currentuser;
+      return next();
+    } catch (error) {
       return next();
     }
-
-    // 2) Checking if the user still exists
-    const currentuser = await User.findById(decoded.id);
-    if (!currentuser) {
-      return next();
-    }
-
-    //  3) check if the user changed the password after the token was issued
-    if (currentuser.changedPasswordAfter(decoded.iat)) {
-      return next();
-    }
-
-    // grant access to the restricted route
-    res.locals.user = currentuser;
-    return next();
   }
   next();
-});
+};
 
 // It restrict the user that do not have access for that specific task
 // eslint-disable-next-line arrow-body-style
