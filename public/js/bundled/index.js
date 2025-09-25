@@ -715,6 +715,7 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 },{}],"6eWNN":[function(require,module,exports,__globalThis) {
 /* eslint-disable */ var _mapboxJs = require("./mapbox.js");
 var _loginJs = require("./login.js");
+const logoutBtn = document.querySelector('.nav__el--logout');
 // Get locations from HTML
 const mapBox = document.getElementById('map');
 if (mapBox) {
@@ -729,6 +730,7 @@ if (loginForm) loginForm.addEventListener('submit', (e)=>{
     const password = document.getElementById('password').value;
     (0, _loginJs.login)(email, password);
 });
+if (logoutBtn) logoutBtn.addEventListener('click', (0, _loginJs.logout));
 
 },{"./mapbox.js":"djPds","./login.js":"kupI4"}],"djPds":[function(require,module,exports,__globalThis) {
 /* eslint-disable */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -803,6 +805,7 @@ exports.export = function(dest, destName, get) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "login", ()=>login);
+parcelHelpers.export(exports, "logout", ()=>logout);
 var _alerts = require("./alerts");
 const login = async (email, password)=>{
     try {
@@ -822,6 +825,17 @@ const login = async (email, password)=>{
         }
     } catch (err) {
         (0, _alerts.showAlert)('error', err.response.data.message);
+    }
+};
+const logout = async ()=>{
+    try {
+        const res = await axios({
+            method: 'GET',
+            url: '/api/v1/users/logout'
+        });
+        if (res.status === 200) location.reload(true);
+    } catch (err) {
+        (0, _alerts.showAlert)('error', 'Error logging out! Try again.');
     }
 };
 
