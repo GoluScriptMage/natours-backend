@@ -846,7 +846,8 @@ const logout = async ()=>{
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "showAlert", ()=>showAlert);
 const showAlert = (type, message)=>{
-    const html = `<div class="alert alert-${type}">${message}</div>`;
+    console.log(`Type: alert--${type}, ${type}`);
+    const html = `<div class="alert alert--${type}">${message}</div>`;
     document.querySelector('body').insertAdjacentHTML('afterbegin', html);
     window.setTimeout(()=>{
         document.querySelector('.alert').remove();
