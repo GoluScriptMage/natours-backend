@@ -4,7 +4,8 @@
 /* eslint-disable */
 
 export const showAlert = (type, message) => {
-  const html = `<div class="alert alert-${type}">${message}</div>`;
+  console.log(`Type: alert--${type}, ${type}`);
+  const html = `<div class="alert alert--${type}">${message}</div>`;
   document.querySelector('body').insertAdjacentHTML('afterbegin', html);
   window.setTimeout(() => {
     document.querySelector('.alert').remove();

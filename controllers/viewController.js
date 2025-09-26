@@ -1,5 +1,6 @@
 const Tours = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 exports.getOverview = catchAsync(async (req, res, next) => {
   const tours = await Tours.find();
@@ -21,7 +22,7 @@ exports.getTourPage = catchAsync(async (req, res, next) => {
   });
 
   if (!tour) {
-    return next(new Error('No tour found with that name'));
+    return next(new AppError('No tour found with that name'));
   }
 
   res.status(200).render('tour', {
